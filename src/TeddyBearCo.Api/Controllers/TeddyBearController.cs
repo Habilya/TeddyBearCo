@@ -20,7 +20,12 @@ public class TeddyBearController : ControllerBase
 	{
 		var teddyBear = request.ToTeddyBear();
 
-		await _teddyBearService.CreateAsync(teddyBear);
+		var created = await _teddyBearService.CreateAsync(teddyBear);
+		if (!created)
+		{
+			// Possibly a good place to Implement logging
+			return BadRequest();
+		}
 
 		var teddyBearResponse = teddyBear.ToTeddyBearResponse();
 
