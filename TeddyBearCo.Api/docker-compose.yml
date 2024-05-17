@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=TeddyBear
+      - POSTGRES_PASSWORD=VerySecretPassword!
+      - POSTGRES_DB=TeddyBeardb
+    ports:
+      - '5432:5432'

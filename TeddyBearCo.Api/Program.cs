@@ -1,19 +1,46 @@
-var builder = WebApplication.CreateBuilder(args);
+﻿using Microsoft.Net.Http.Headers;
+using TeddyBearCo.Api.Database;
+using TeddyBearCo.Api.Repositories;
+using TeddyBearCo.Api.Services;
+
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+	Args = args,
+	ContentRootPath = Directory.GetCurrentDirectory()
+});
+
+var config = builder.Configuration;
+
 
 // Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
+
+builder.Services.AddSingleton<IDbConnectionFactory>(_ =>
+	new NpgsqlConnectionFactory(config.GetValue<string>("Database:ConnectionString")));
+builder.Services.AddSingleton<DatabaseInitializer>();
+
+builder.Services.AddSingleton<ITeddyBearRepository, TeddyBearRepository>();
+builder.Services.AddSingleton<ITeddyBearService, TeddyBearService>();
+builder.Services.AddSingleton<ITypicodeService, TypicodeService>();
+builder.Services.AddHttpClient("TypicodeApi", httpClient =>
+{
+	httpClient.BaseAddress = new Uri(config.GetValue<string>("TypicodeApi:BaseUrl"));
+	httpClient.DefaultRequestHeaders.Add(
+		HeaderNames.Accept, "application/json");
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+	app.UseSwagger();
+	app.UseSwaggerUI();
+
+	var databaseInitializer = app.Services.GetRequiredService<DatabaseInitializer>();
+	await databaseInitializer.InitializeAsync();
 }
 
 app.UseHttpsRedirection();
