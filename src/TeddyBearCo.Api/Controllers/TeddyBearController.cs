@@ -15,6 +15,20 @@ public class TeddyBearController : ControllerBase
 		_teddyBearService = teddyBearService;
 	}
 
+	[HttpGet("teddybears/{id:guid}")]
+	public async Task<IActionResult> GetById(Guid id)
+	{
+		var teddyBear = await _teddyBearService.GetAsync(id);
+		if (teddyBear is null)
+		{
+			return NotFound();
+		}
+
+		var teddyBearResponse = teddyBear.ToTeddyBearResponse();
+
+		return Ok(teddyBearResponse);
+	}
+
 	[HttpPost("teddybears")]
 	public async Task<IActionResult> Create([FromBody] TeddyBearRequest request)
 	{
@@ -29,6 +43,6 @@ public class TeddyBearController : ControllerBase
 
 		var teddyBearResponse = teddyBear.ToTeddyBearResponse();
 
-		return CreatedAtAction("Get", new { teddyBearResponse.Id }, teddyBearResponse);
+		return CreatedAtAction(nameof(GetById), new { id = teddyBearResponse.Id }, teddyBearResponse);
 	}
 }
