@@ -1,4 +1,5 @@
 ﻿using TeddyBearCo.Api.Database;
+using TeddyBearCo.Api.Infrastructure;
 using TeddyBearCo.Api.Repositories;
 using TeddyBearCo.Api.Services;
 
@@ -23,6 +24,8 @@ builder.Services.AddSingleton<DatabaseInitializer>();
 builder.Services.AddSingleton<ITeddyBearRepository, TeddyBearRepository>();
 builder.Services.AddSingleton<ITeddyBearService, TeddyBearService>();
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
@@ -35,6 +38,8 @@ if (app.Environment.IsDevelopment())
 	var databaseInitializer = app.Services.GetRequiredService<DatabaseInitializer>();
 	await databaseInitializer.InitializeAsync();
 }
+
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
