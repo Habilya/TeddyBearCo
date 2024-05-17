@@ -1,5 +1,4 @@
-﻿using Microsoft.Net.Http.Headers;
-using TeddyBearCo.Api.Database;
+﻿using TeddyBearCo.Api.Database;
 using TeddyBearCo.Api.Repositories;
 using TeddyBearCo.Api.Services;
 
@@ -23,13 +22,7 @@ builder.Services.AddSingleton<DatabaseInitializer>();
 
 builder.Services.AddSingleton<ITeddyBearRepository, TeddyBearRepository>();
 builder.Services.AddSingleton<ITeddyBearService, TeddyBearService>();
-builder.Services.AddSingleton<ITypicodeService, TypicodeService>();
-builder.Services.AddHttpClient("TypicodeApi", httpClient =>
-{
-	httpClient.BaseAddress = new Uri(config.GetValue<string>("TypicodeApi:BaseUrl"));
-	httpClient.DefaultRequestHeaders.Add(
-		HeaderNames.Accept, "application/json");
-});
+
 
 var app = builder.Build();
 

@@ -26,18 +26,4 @@ public class TeddyBearController : ControllerBase
 
 		return CreatedAtAction("Get", new { teddyBearResponse.Id }, teddyBearResponse);
 	}
-
-	[HttpGet("teddybears/{id:guid}")]
-	public async Task<IActionResult> Get([FromRoute] Guid id)
-	{
-		var teddyBear = await _teddyBearService.GetAsync(id);
-
-		if (teddyBear is null)
-		{
-			return NotFound();
-		}
-
-		var teddyBearResponse = teddyBear.ToTeddyBearResponse();
-		return Ok(teddyBearResponse);
-	}
 }
